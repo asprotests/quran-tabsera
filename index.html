@@ -172,7 +172,9 @@
       message.textContent = 'Loading...';
 
       try {
-        const res = await fetch(`http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}`);
+        const res = await fetch(`http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}`, {
+          mode: 'no-cors'  // 😬 suppresses CORS but returns empty responses
+})
         if (!res.ok) {
           const err = await res.json();
           message.textContent = err.error || 'Server error occurred.';
