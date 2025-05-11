@@ -103,6 +103,20 @@
       color: #888;
     }
 
+    .card small {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+.card p {
+  margin-top: 0.3rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #555;
+}
+
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -210,20 +224,32 @@
         const data = await res.json();
 
         // Show stats cards
-        stats.innerHTML = `
-          <div class="card">
-            <h2>${data.totalAssignments}</h2>
-            <p>Total Assignments</p>
-          </div>
-          <div class="card">
-            <h2>${data.gradedAssignments}</h2>
-            <p>Graded Assignments</p>
-          </div>
-          <div class="card">
-            <h2>${data.ungradedAssignments}</h2>
-            <p>Ungraded Assignments</p>
-          </div>
-        `;
+        const total = data.totalAssignments || 0;
+const graded = data.gradedAssignments || 0;
+const ungraded = data.ungradedAssignments || 0;
+
+const gradedPercent = total ? ((graded / total) * 100).toFixed(1) : 0;
+const ungradedPercent = total ? ((ungraded / total) * 100).toFixed(1) : 0;
+
+const dateRangeText = `${from.split('-').reverse().join('-')} to ${to.split('-').reverse().join('-')}`;
+
+stats.innerHTML = `
+  <div class="card">
+    <h2>${total}</h2>
+    <small style="color: #777;">${dateRangeText}</small>
+    <p>Total Assignments</p>
+  </div>
+  <div class="card">
+    <h2>${graded}</h2>
+    <small style="color: #777;">${gradedPercent}%</small>
+    <p>Graded Assignments</p>
+  </div>
+  <div class="card">
+    <h2>${ungraded}</h2>
+    <small style="color: #777;">${ungradedPercent}%</small>
+    <p>Ungraded Assignments</p>
+  </div>
+`;
 
         // Populate table
         if (!data.teachers || !data.teachers.length) {
