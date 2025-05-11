@@ -235,23 +235,27 @@
         const formattedTo = to.split('-').reverse().join('-');
         const dateRangeText = `${formattedFrom} to ${formattedTo}`;
 
-        stats.innerHTML = `
-          <div class="card">
-            <h2>${total}</h2>
-            <small>${dateRangeText}</small>
-            <p>Total Assignments</p>
-          </div>
-          <div class="card">
-            <h2>${graded}</h2>
-            <small>${gradedPercent}%</small>
-            <p>Graded Assignments</p>
-          </div>
-          <div class="card">
-            <h2>${ungraded}</h2>
-            <small>${ungradedPercent}%</small>
-            <p>Ungraded Assignments</p>
-          </div>
-        `;
+        const genderLabel = gender.toLowerCase() === "all"
+  ? ""
+  : gender.charAt(0).toUpperCase() + gender.slice(1) + " ";
+
+stats.innerHTML = `
+  <div class="card">
+    <h2>${total}</h2>
+    <small>${dateRangeText}</small>
+    <p>Total ${genderLabel}Assignments</p>
+  </div>
+  <div class="card">
+    <h2>${graded}</h2>
+    <small>${gradedPercent}%</small>
+    <p>Graded ${genderLabel}Assignments</p>
+  </div>
+  <div class="card">
+    <h2>${ungraded}</h2>
+    <small>${ungradedPercent}%</small>
+    <p>Ungraded ${genderLabel}Assignments</p>
+  </div>
+`;
 
         if (!data.teachers || !data.teachers.length) {
           message.textContent = 'No teachers found for this range.';
