@@ -231,11 +231,9 @@
         const gradedPercent = total ? ((graded / total) * 100).toFixed(1) : 0;
         const ungradedPercent = total ? ((ungraded / total) * 100).toFixed(1) : 0;
 
-        const startDate = new Date(from);
-        const options = { weekday: 'long' };
-        const dayName = startDate.toLocaleDateString('en-US', options);
-        const formattedStart = from.split('-').reverse().join('-');
-        const dateRangeText = `${formattedStart} (${dayName})`;
+        const formattedFrom = from.split('-').reverse().join('-');
+        const formattedTo = to.split('-').reverse().join('-');
+        const dateRangeText = `${formattedFrom} to ${formattedTo}`;
 
         stats.innerHTML = `
           <div class="card">
@@ -261,6 +259,8 @@
         }
 
         data.teachers.forEach((row) => {
+          if (!row.teacher || row.teacher.trim() === "") return;
+
           const percent = total
             ? ((row.assignmentsGraded / total) * 100).toFixed(1)
             : '0.0';
