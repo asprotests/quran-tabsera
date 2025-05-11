@@ -253,8 +253,12 @@
           </div>
         `;
 
+        if (!data.teachers || !data.teachers.length) {
+          message.textContent = 'No teachers found for this range.';
+          return;
+        }
+
         data.teachers.forEach((row) => {
-          if (!row.teacher || row.teacher.trim() === "") return;
 
           const percent = total
             ? ((row.assignmentsGraded / total) * 100).toFixed(1)
