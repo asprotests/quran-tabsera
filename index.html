@@ -56,7 +56,8 @@
       color: #333;
     }
 
-    input[type="date"] {
+    input[type="date"],
+    select {
       padding: 0.5rem;
       border-radius: 6px;
       border: 1px solid #ccc;
@@ -104,18 +105,11 @@
     }
 
     .card small {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.85rem;
-  color: #888;
-}
-.card p {
-  margin-top: 0.3rem;
-  font-weight: 500;
-  font-size: 1rem;
-  color: #555;
-}
-
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.85rem;
+      color: #888;
+    }
 
     table {
       width: 100%;
@@ -174,13 +168,18 @@
       <label>To
         <input type="date" id="to" />
       </label>
+      <label>Gender
+        <select id="gender">
+          <option value="all">All</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </label>
       <button onclick="fetchReport()">Search</button>
       <span id="message"></span>
     </div>
 
-    <div class="stats" id="stats">
-      <!-- Summary cards will be injected here -->
-    </div>
+    <div class="stats" id="stats"></div>
 
     <table>
       <thead>
@@ -199,6 +198,7 @@
     async function fetchReport() {
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
+      const gender = document.getElementById('gender').value;
       const message = document.getElementById('message');
       const body = document.getElementById('report-body');
       const stats = document.getElementById('stats');
@@ -215,7 +215,7 @@
       message.textContent = 'Loading...';
 
       try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}`);
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`);
         if (!res.ok) {
           const err = await res.json();
           message.textContent = err.error || 'Server error occurred.';
@@ -224,54 +224,57 @@
 
         const data = await res.json();
 
-        // Show stats cards
         const total = data.totalAssignments || 0;
-const graded = data.gradedAssignments || 0;
-const ungraded = data.ungradedAssignments || 0;
+        const graded = data.gradedAssignments || 0;
+        const ungraded = data.ungradedAssignments || 0;
 
-const gradedPercent = total ? ((graded / total) * 100).toFixed(1) : 0;
-const ungradedPercent = total ? ((ungraded / total) * 100).toFixed(1) : 0;
+        const gradedPercent = total ? ((graded / total) * 100).toFixed(1) : 0;
+        const ungradedPercent = total ? ((ungraded / total) * 100).toFixed(1) : 0;
 
-const dateRangeText = `${from.split('-').reverse().join('-')} to ${to.split('-').reverse().join('-')}`;
+        const startDate = new Date(from);
+        const options = { weekday: 'long' };
+        const dayName = startDate.toLocaleDateString('en-US', options);
+        const formattedStart = from.split('-').reverse().join('-');
+        const dateRangeText = `${formattedStart} (${dayName})`;
 
-stats.innerHTML = `
-  <div class="card">
-    <h2>${total}</h2>
-    <small style="color: #777;">${dateRangeText}</small>
-    <p>Total Assignments</p>
-  </div>
-  <div class="card">
-    <h2>${graded}</h2>
-    <small style="color: #777;">${gradedPercent}%</small>
-    <p>Graded Assignments</p>
-  </div>
-  <div class="card">
-    <h2>${ungraded}</h2>
-    <small style="color: #777;">${ungradedPercent}%</small>
-    <p>Ungraded Assignments</p>
-  </div>
-`;
+        stats.innerHTML = `
+          <div class="card">
+            <h2>${total}</h2>
+            <small>${dateRangeText}</small>
+            <p>Total Assignments</p>
+          </div>
+          <div class="card">
+            <h2>${graded}</h2>
+            <small>${gradedPercent}%</small>
+            <p>Graded Assignments</p>
+          </div>
+          <div class="card">
+            <h2>${ungraded}</h2>
+            <small>${ungradedPercent}%</small>
+            <p>Ungraded Assignments</p>
+          </div>
+        `;
 
-        // Populate table
         if (!data.teachers || !data.teachers.length) {
           message.textContent = 'No teachers found for this range.';
           return;
         }
 
         data.teachers.forEach((row) => {
-  const percent = data.totalAssignments
-    ? ((row.assignmentsGraded / data.totalAssignments) * 100).toFixed(1)
-    : '0.0';
+          const percent = total
+            ? ((row.assignmentsGraded / total) * 100).toFixed(1)
+            : '0.0';
 
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>${row.id}</td>
-    <td>${row.teacher}</td>
-    <td>${row.assignmentsGraded}</td>
-    <td>${percent}%</td>
-  `;
-  body.appendChild(tr);
-});
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${row.id}</td>
+            <td>${row.teacher}</td>
+            <td>${row.assignmentsGraded}</td>
+            <td>${percent}%</td>
+          `;
+          body.appendChild(tr);
+        });
+
         message.textContent = '';
       } catch (error) {
         message.textContent = 'Network error. Please try again later.';
