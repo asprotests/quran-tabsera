@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Tabsera Quran Teacher Report Dashboard</title>
   <style>
     * {
@@ -10,7 +10,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #f4f6f9;
       margin: 0;
       padding: 0;
     }
@@ -24,20 +24,20 @@
     }
 
     .logo {
-      height: 50px;
-      width: 50px;
+      height: 48px;
+      width: 48px;
       border-radius: 50%;
       margin-right: 15px;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 1.8rem;
       margin: 0;
     }
 
     .container {
       padding: 2rem;
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
     }
 
@@ -45,7 +45,8 @@
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: end;
     }
 
     label {
@@ -57,16 +58,16 @@
 
     input[type="date"] {
       padding: 0.5rem;
-      border-radius: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
 
     button {
-      padding: 0.7rem 1.5rem;
+      padding: 0.6rem 1.5rem;
       background-color: #3498db;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
     }
@@ -75,83 +76,107 @@
       background-color: #2980b9;
     }
 
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      flex: 1;
+      background-color: white;
+      padding: 1.2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 2rem;
+      color: #2c3e50;
+    }
+
+    .card p {
+      margin: 0.5rem 0 0;
+      color: #888;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
     }
 
     th, td {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #eee;
+      padding: 0.85rem 1.2rem;
+      border-bottom: 1px solid #f0f0f0;
       text-align: left;
     }
 
     th {
-      background-color: #ecf0f1;
+      background-color: #f7f9fb;
+      color: #444;
+      font-weight: 600;
     }
 
     #message {
       color: red;
       font-weight: bold;
+      margin-left: 1rem;
     }
 
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 1.5rem;
+    @media (max-width: 768px) {
+      .stats {
+        flex-direction: column;
       }
 
-      .logo {
-        height: 40px;
-        width: 40px;
-      }
-
-      label {
-        width: 100%;
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
       }
 
       button {
         width: 100%;
-      }
-
-      table, th, td {
-        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="./src/logo.png" alt="Logo" class="logo">
+    <img src="./src/logo.png" alt="Logo" class="logo" />
     <h1>Teacher Report Dashboard</h1>
   </header>
 
   <div class="container">
     <div class="controls">
       <label>From
-        <input type="date" id="from">
+        <input type="date" id="from" />
       </label>
       <label>To
-        <input type="date" id="to">
+        <input type="date" id="to" />
       </label>
-      <div style="align-self: end;">
-        <div style="display: flex; align-items: center; gap: 1rem;">
-          <button onclick="fetchReport()">Search</button>
-          <div id="message"></div>
-        </div>
-      </div>
+      <button onclick="fetchReport()">Search</button>
+      <span id="message"></span>
+    </div>
+
+    <div class="stats" id="stats">
+      <!-- Summary cards will be injected here -->
     </div>
 
     <table>
       <thead>
         <tr>
-          <th>Name</th>
+          <th>#</th>
+          <th>Teacher</th>
           <th>Assignments Graded</th>
         </tr>
       </thead>
-      <tbody id="report-body">
-      </tbody>
+      <tbody id="report-body"></tbody>
     </table>
   </div>
 
@@ -161,8 +186,11 @@
       const to = document.getElementById('to').value;
       const message = document.getElementById('message');
       const body = document.getElementById('report-body');
+      const stats = document.getElementById('stats');
+
       message.textContent = '';
       body.innerHTML = '';
+      stats.innerHTML = '';
 
       if (!from || !to) {
         message.textContent = 'Please select both From and To dates.';
@@ -180,17 +208,40 @@
         }
 
         const data = await res.json();
-        if (!data.length) {
-          message.textContent = 'No data found for the selected date range.';
+
+        // Show stats cards
+        stats.innerHTML = `
+          <div class="card">
+            <h2>${data.totalAssignments}</h2>
+            <p>Total Assignments</p>
+          </div>
+          <div class="card">
+            <h2>${data.gradedAssignments}</h2>
+            <p>Graded Assignments</p>
+          </div>
+          <div class="card">
+            <h2>${data.ungradedAssignments}</h2>
+            <p>Ungraded Assignments</p>
+          </div>
+        `;
+
+        // Populate table
+        if (!data.teachers || !data.teachers.length) {
+          message.textContent = 'No teachers found for this range.';
           return;
         }
 
-        message.textContent = '';
-        data.forEach(row => {
+        data.teachers.forEach((row) => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${row.teacher}</td><td>${row.assignmentsGraded}</td>`;
+          tr.innerHTML = `
+            <td>${row.id}</td>
+            <td>${row.teacher}</td>
+            <td>${row.assignmentsGraded}</td>
+          `;
           body.appendChild(tr);
         });
+
+        message.textContent = '';
       } catch (error) {
         message.textContent = 'Network error. Please try again later.';
       }
