@@ -258,15 +258,19 @@ stats.innerHTML = `
         }
 
         data.teachers.forEach((row) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${row.id}</td>
-            <td>${row.teacher}</td>
-            <td>${row.assignmentsGraded}</td>
-          `;
-          body.appendChild(tr);
-        });
+  const percent = data.totalAssignments
+    ? ((row.assignmentsGraded / data.totalAssignments) * 100).toFixed(1)
+    : '0.0';
 
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${row.id}</td>
+    <td>${row.teacher}</td>
+    <td>${row.assignmentsGraded}</td>
+    <td>${percent}%</td>
+  `;
+  body.appendChild(tr);
+});
         message.textContent = '';
       } catch (error) {
         message.textContent = 'Network error. Please try again later.';
