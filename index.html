@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tabsera Quran Teacher Report Dashboard</title>
+  <title>Tabsera Quran Reports Dashboard</title>
   <style>
     * {
       box-sizing: border-box;
@@ -118,6 +118,7 @@
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      margin-bottom: 2rem;
     }
 
     th, td {
@@ -136,6 +137,21 @@
       color: red;
       font-weight: bold;
       margin-left: 1rem;
+    }
+
+    .toggle-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-buttons button {
+      background-color: #ccc;
+      color: black;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     @media (max-width: 768px) {
@@ -157,10 +173,15 @@
 <body>
   <header>
     <img src="./src/logo.png" alt="Logo" class="logo" />
-    <h1>Teacher Report Dashboard</h1>
+    <h1>Quran Tabsera Reports Dashboard</h1>
   </header>
 
   <div class="container">
+    <div class="toggle-buttons">
+      <button id="assignment-btn" onclick="showAssignmentReport()">Assignment Report</button>
+      <button id="survey-btn" onclick="showDownloadReport()">Download Report</button>
+    </div>
+
     <div class="controls">
       <label>From
         <input type="date" id="from" />
@@ -168,7 +189,7 @@
       <label>To
         <input type="date" id="to" />
       </label>
-      <label>Gender
+      <label id="gender-label">Gender
         <select id="gender">
           <option value="all">All</option>
           <option value="male">Male</option>
@@ -181,7 +202,8 @@
 
     <div class="stats" id="stats"></div>
 
-    <table>
+    <!-- Assignment Table -->
+    <table id="assignment-table">
       <thead>
         <tr>
           <th>#</th>
@@ -192,9 +214,90 @@
       </thead>
       <tbody id="report-body"></tbody>
     </table>
+
+    <!-- Download Report Table -->
+    <table id="survey-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Agent Name</th>
+          <th>Android Downloads</th>
+          <th>iOS Downloads</th>
+          <th>Total Downloads</th>
+        </tr>
+      </thead>
+      <tbody id="survey-body"></tbody>
+    </table>
   </div>
 
   <script>
+    function showAssignmentReport() {
+      document.getElementById('assignment-table').style.display = '';
+      document.getElementById('survey-table').style.display = 'none';
+      document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
+      document.getElementById('survey-btn').style.backgroundColor = '#ccc';
+      document.getElementById('gender-label').style.display = '';
+    }
+
+    function showDownloadReport() {
+      document.getElementById('assignment-table').style.display = 'none';
+      document.getElementById('survey-table').style.display = '';
+      document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
+      document.getElementById('survey-btn').style.backgroundColor = '#3498db';
+      document.getElementById('gender-label').style.display = 'none';
+      fetchDownloadReport();
+    }
+
+    async function fetchDownloadReport() {
+      const message = document.getElementById('message');
+      const body = document.getElementById('survey-body');
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+
+      message.textContent = '';
+      body.innerHTML = '';
+
+      if (!from || !to) {
+        message.textContent = 'Please select both From and To dates.';
+        return;
+      }
+
+      message.textContent = 'Loading download report...';
+
+      try {
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download`);
+        if (!res.ok) {
+          const err = await res.json();
+          message.textContent = err.error || 'Error fetching download report.';
+          return;
+        }
+
+        const data = await res.json();
+
+        if (!data || !data.length) {
+          message.textContent = 'No download records found.';
+          return;
+        }
+
+        data.forEach((item, index) => {
+          const total = item.android + item.ios;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.agent}</td>
+            <td>${item.android}</td>
+            <td>${item.ios}</td>
+            <td>${total}</td>
+          `;
+          body.appendChild(tr);
+        });
+
+        message.textContent = '';
+      } catch (error) {
+        message.textContent = 'Network error loading download report.';
+      }
+    }
+
     async function fetchReport() {
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
@@ -236,26 +339,26 @@
         const dateRangeText = `${formattedFrom} to ${formattedTo}`;
 
         const genderLabel = gender.toLowerCase() === "all"
-  ? ""
-  : gender.charAt(0).toUpperCase() + gender.slice(1) + " ";
+          ? ""
+          : gender.charAt(0).toUpperCase() + gender.slice(1) + " ";
 
-stats.innerHTML = `
-  <div class="card">
-    <h2>${total}</h2>
-    <small>${dateRangeText}</small>
-    <p>Total ${genderLabel}Assignments</p>
-  </div>
-  <div class="card">
-    <h2>${graded}</h2>
-    <small>${gradedPercent}%</small>
-    <p>Graded ${genderLabel}Assignments</p>
-  </div>
-  <div class="card">
-    <h2>${ungraded}</h2>
-    <small>${ungradedPercent}%</small>
-    <p>Ungraded ${genderLabel}Assignments</p>
-  </div>
-`;
+        stats.innerHTML = `
+          <div class="card">
+            <h2>${total}</h2>
+            <small>${dateRangeText}</small>
+            <p>Total ${genderLabel}Assignments</p>
+          </div>
+          <div class="card">
+            <h2>${graded}</h2>
+            <small>${gradedPercent}%</small>
+            <p>Graded ${genderLabel}Assignments</p>
+          </div>
+          <div class="card">
+            <h2>${ungraded}</h2>
+            <small>${ungradedPercent}%</small>
+            <p>Ungraded ${genderLabel}Assignments</p>
+          </div>
+        `;
 
         if (!data.teachers || !data.teachers.length) {
           message.textContent = 'No teachers found for this range.';
@@ -263,7 +366,6 @@ stats.innerHTML = `
         }
 
         data.teachers.forEach((row) => {
-
           const percent = total
             ? ((row.assignmentsGraded / total) * 100).toFixed(1)
             : '0.0';

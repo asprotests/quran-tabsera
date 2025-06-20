@@ -1,12 +1,20 @@
-// api/proxy.js
+// pages/api/proxy.js
 
 export default async function handler(req, res) {
-  const { from, to, gender } = req.query;
+  const { from, to, gender, type } = req.query;
 
   try {
-    const response = await fetch(
-      `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}`
-    );
+    let endpoint;
+
+    if (type === "download") {
+      // Route to download survey/report endpoint
+      endpoint = `http://tabsera.com:8585/quran-teacher-report/survey?from=${from}&to=${to}`;
+    } else {
+      // Default: assignment report
+      endpoint = `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}`;
+    }
+
+    const response = await fetch(endpoint);
 
     if (!response.ok) {
       const error = await response.text();
