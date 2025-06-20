@@ -196,7 +196,7 @@
           <option value="female">Female</option>
         </select>
       </label>
-      <button onclick="fetchReport()">Search</button>
+      <button onclick="handleSearch()">Search</button>
       <span id="message"></span>
     </div>
 
@@ -231,7 +231,10 @@
   </div>
 
   <script>
+    let currentView = "assignment"; // "assignment" or "download"
+
     function showAssignmentReport() {
+      currentView = "assignment";
       document.getElementById('assignment-table').style.display = '';
       document.getElementById('survey-table').style.display = 'none';
       document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
@@ -241,13 +244,21 @@
     }
 
     function showDownloadReport() {
+      currentView = "download";
       document.getElementById('assignment-table').style.display = 'none';
       document.getElementById('survey-table').style.display = '';
       document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
       document.getElementById('survey-btn').style.backgroundColor = '#3498db';
       document.getElementById('gender-label').style.display = 'none';
       document.getElementById('stats').style.display = 'none'; // Hide stats
-      fetchDownloadReport();
+    }
+
+    function handleSearch() {
+      if (currentView === "assignment") {
+        fetchReport();
+      } else {
+        fetchDownloadReport();
+      }
     }
 
     async function fetchDownloadReport() {
