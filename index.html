@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tabsera Quran Reports Dashboard</title>
+  <title>Tabsera Quran Teacher Report Dashboard</title>
   <style>
     * {
       box-sizing: border-box;
@@ -173,7 +173,7 @@
 <body>
   <header>
     <img src="./src/logo.png" alt="Logo" class="logo" />
-    <h1>Quran Tabsera Reports Dashboard</h1>
+    <h1>Teacher Report Dashboard</h1>
   </header>
 
   <div class="container">
@@ -237,6 +237,7 @@
       document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
       document.getElementById('survey-btn').style.backgroundColor = '#ccc';
       document.getElementById('gender-label').style.display = '';
+      document.getElementById('stats').style.display = ''; // Show stats
     }
 
     function showDownloadReport() {
@@ -245,6 +246,7 @@
       document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
       document.getElementById('survey-btn').style.backgroundColor = '#3498db';
       document.getElementById('gender-label').style.display = 'none';
+      document.getElementById('stats').style.display = 'none'; // Hide stats
       fetchDownloadReport();
     }
 
