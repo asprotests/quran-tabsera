@@ -230,174 +230,177 @@
     </table>
   </div>
 
-  <script>
-    let currentView = "assignment"; // "assignment" or "download"
+<script>
+  let currentView = "assignment"; // "assignment" or "download"
 
-    function showAssignmentReport() {
-      currentView = "assignment";
-      document.getElementById('assignment-table').style.display = '';
-      document.getElementById('survey-table').style.display = 'none';
-      document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
-      document.getElementById('survey-btn').style.backgroundColor = '#ccc';
-      document.getElementById('gender-label').style.display = '';
-      document.getElementById('stats').style.display = ''; // Show stats
+  function showAssignmentReport() {
+    currentView = "assignment";
+    document.getElementById('assignment-table').style.display = '';
+    document.getElementById('survey-table').style.display = 'none';
+    document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
+    document.getElementById('survey-btn').style.backgroundColor = '#ccc';
+    document.getElementById('gender-label').style.display = '';
+    document.getElementById('stats').style.display = ''; // Show stats
+  }
+
+  function showDownloadReport() {
+    currentView = "download";
+    document.getElementById('assignment-table').style.display = 'none';
+    document.getElementById('survey-table').style.display = '';
+    document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
+    document.getElementById('survey-btn').style.backgroundColor = '#3498db';
+    document.getElementById('gender-label').style.display = 'none';
+    document.getElementById('stats').style.display = 'none'; // Hide stats
+  }
+
+  function handleSearch() {
+    if (currentView === "assignment") {
+      fetchReport();
+    } else {
+      fetchDownloadReport();
+    }
+  }
+
+  async function fetchDownloadReport() {
+    const message = document.getElementById('message');
+    const body = document.getElementById('survey-body');
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+
+    message.textContent = '';
+    body.innerHTML = '';
+
+    if (!from || !to) {
+      message.textContent = 'Please select both From and To dates.';
+      return;
     }
 
-    function showDownloadReport() {
-      currentView = "download";
-      document.getElementById('assignment-table').style.display = 'none';
-      document.getElementById('survey-table').style.display = '';
-      document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
-      document.getElementById('survey-btn').style.backgroundColor = '#3498db';
-      document.getElementById('gender-label').style.display = 'none';
-      document.getElementById('stats').style.display = 'none'; // Hide stats
-    }
+    message.textContent = 'Loading download report...';
 
-    function handleSearch() {
-      if (currentView === "assignment") {
-        fetchReport();
-      } else {
-        fetchDownloadReport();
-      }
-    }
-
-    async function fetchDownloadReport() {
-      const message = document.getElementById('message');
-      const body = document.getElementById('survey-body');
-      const from = document.getElementById('from').value;
-      const to = document.getElementById('to').value;
-
-      message.textContent = '';
-      body.innerHTML = '';
-
-      if (!from || !to) {
-        message.textContent = 'Please select both From and To dates.';
+    try {
+      const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download`);
+      if (!res.ok) {
+        const err = await res.json();
+        message.textContent = err.error || 'Error fetching download report.';
         return;
       }
 
-      message.textContent = 'Loading download report...';
+      const data = await res.json();
 
-      try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download`);
-        if (!res.ok) {
-          const err = await res.json();
-          message.textContent = err.error || 'Error fetching download report.';
-          return;
-        }
-
-        const data = await res.json();
-
-        if (!data || !data.length) {
-          message.textContent = 'No download records found.';
-          return;
-        }
-
-        data.forEach((item, index) => {
-          const total = item.android + item.ios;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${item.agent}</td>
-            <td>${item.android}</td>
-            <td>${item.ios}</td>
-            <td>${total}</td>
-          `;
-          body.appendChild(tr);
-        });
-
-        message.textContent = '';
-      } catch (error) {
-        message.textContent = 'Network error loading download report.';
-      }
-    }
-
-    async function fetchReport() {
-      const from = document.getElementById('from').value;
-      const to = document.getElementById('to').value;
-      const gender = document.getElementById('gender').value;
-      const message = document.getElementById('message');
-      const body = document.getElementById('report-body');
-      const stats = document.getElementById('stats');
-
-      message.textContent = '';
-      body.innerHTML = '';
-      stats.innerHTML = '';
-
-      if (!from || !to) {
-        message.textContent = 'Please select both From and To dates.';
+      if (!data || !data.length) {
+        message.textContent = 'No download records found.';
         return;
       }
 
-      message.textContent = 'Loading...';
-
-      try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`);
-        if (!res.ok) {
-          const err = await res.json();
-          message.textContent = err.error || 'Server error occurred.';
-          return;
-        }
-
-        const data = await res.json();
-
-        const total = data.totalAssignments || 0;
-        const graded = data.gradedAssignments || 0;
-        const ungraded = data.ungradedAssignments || 0;
-
-        const gradedPercent = total ? ((graded / total) * 100).toFixed(1) : 0;
-        const ungradedPercent = total ? ((ungraded / total) * 100).toFixed(1) : 0;
-
-        const formattedFrom = from.split('-').reverse().join('-');
-        const formattedTo = to.split('-').reverse().join('-');
-        const dateRangeText = `${formattedFrom} to ${formattedTo}`;
-
-        const genderLabel = gender.toLowerCase() === "all"
-          ? ""
-          : gender.charAt(0).toUpperCase() + gender.slice(1) + " ";
-
-        stats.innerHTML = `
-          <div class="card">
-            <h2>${total}</h2>
-            <small>${dateRangeText}</small>
-            <p>Total ${genderLabel}Assignments</p>
-          </div>
-          <div class="card">
-            <h2>${graded}</h2>
-            <small>${gradedPercent}%</small>
-            <p>Graded ${genderLabel}Assignments</p>
-          </div>
-          <div class="card">
-            <h2>${ungraded}</h2>
-            <small>${ungradedPercent}%</small>
-            <p>Ungraded ${genderLabel}Assignments</p>
-          </div>
+      data.forEach((item, index) => {
+        const isTotalRow = item.agent === "Total";
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${isTotalRow ? "" : index + 1}</td>
+          <td><strong>${item.agent}</strong></td>
+          <td><strong>${item.android}</strong></td>
+          <td><strong>${item.ios}</strong></td>
+          <td><strong>${item.total}</strong></td>
         `;
-
-        if (!data.teachers || !data.teachers.length) {
-          message.textContent = 'No teachers found for this range.';
-          return;
+        if (isTotalRow) {
+          tr.style.backgroundColor = "#eef2f7";
         }
+        body.appendChild(tr);
+      });
 
-        data.teachers.forEach((row) => {
-          const percent = total
-            ? ((row.assignmentsGraded / total) * 100).toFixed(1)
-            : '0.0';
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${row.id}</td>
-            <td>${row.teacher}</td>
-            <td>${row.assignmentsGraded}</td>
-            <td>${percent}%</td>
-          `;
-          body.appendChild(tr);
-        });
-
-        message.textContent = '';
-      } catch (error) {
-        message.textContent = 'Network error. Please try again later.';
-      }
+      message.textContent = '';
+    } catch (error) {
+      message.textContent = 'Network error loading download report.';
     }
-  </script>
+  }
+
+  async function fetchReport() {
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const gender = document.getElementById('gender').value;
+    const message = document.getElementById('message');
+    const body = document.getElementById('report-body');
+    const stats = document.getElementById('stats');
+
+    message.textContent = '';
+    body.innerHTML = '';
+    stats.innerHTML = '';
+
+    if (!from || !to) {
+      message.textContent = 'Please select both From and To dates.';
+      return;
+    }
+
+    message.textContent = 'Loading...';
+
+    try {
+      const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`);
+      if (!res.ok) {
+        const err = await res.json();
+        message.textContent = err.error || 'Server error occurred.';
+        return;
+      }
+
+      const data = await res.json();
+
+      const total = data.totalAssignments || 0;
+      const graded = data.gradedAssignments || 0;
+      const ungraded = data.ungradedAssignments || 0;
+
+      const gradedPercent = total ? ((graded / total) * 100).toFixed(1) : 0;
+      const ungradedPercent = total ? ((ungraded / total) * 100).toFixed(1) : 0;
+
+      const formattedFrom = from.split('-').reverse().join('-');
+      const formattedTo = to.split('-').reverse().join('-');
+      const dateRangeText = `${formattedFrom} to ${formattedTo}`;
+
+      const genderLabel = gender.toLowerCase() === "all"
+        ? ""
+        : gender.charAt(0).toUpperCase() + gender.slice(1) + " ";
+
+      stats.innerHTML = `
+        <div class="card">
+          <h2>${total}</h2>
+          <small>${dateRangeText}</small>
+          <p>Total ${genderLabel}Assignments</p>
+        </div>
+        <div class="card">
+          <h2>${graded}</h2>
+          <small>${gradedPercent}%</small>
+          <p>Graded ${genderLabel}Assignments</p>
+        </div>
+        <div class="card">
+          <h2>${ungraded}</h2>
+          <small>${ungradedPercent}%</small>
+          <p>Ungraded ${genderLabel}Assignments</p>
+        </div>
+      `;
+
+      if (!data.teachers || !data.teachers.length) {
+        message.textContent = 'No teachers found for this range.';
+        return;
+      }
+
+      data.teachers.forEach((row) => {
+        const percent = total
+          ? ((row.assignmentsGraded / total) * 100).toFixed(1)
+          : '0.0';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.id}</td>
+          <td>${row.teacher}</td>
+          <td>${row.assignmentsGraded}</td>
+          <td>${percent}%</td>
+        `;
+        body.appendChild(tr);
+      });
+
+      message.textContent = '';
+    } catch (error) {
+      message.textContent = 'Network error. Please try again later.';
+    }
+  }
+</script>
 </body>
 </html>
