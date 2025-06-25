@@ -56,8 +56,13 @@
     }
 
     #error {
-      color: red;
-      margin-top: 0.5rem;
+      display: none;
+      background-color: #fce4e4;
+      color: #c0392b;
+      padding: 0.75rem;
+      border: 1px solid #e0b4b4;
+      border-radius: 8px;
+      margin-top: 1rem;
       font-weight: bold;
     }
 
@@ -83,10 +88,12 @@
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
       const errorElem = document.getElementById("error");
+      errorElem.style.display = "none";
       errorElem.textContent = "";
 
       if (!username || !password) {
         errorElem.textContent = "Please enter both username and password.";
+        errorElem.style.display = "block";
         return;
       }
 
@@ -104,9 +111,11 @@
           window.location.href = "reports.html";
         } else {
           errorElem.textContent = data.error || "Login failed.";
+          errorElem.style.display = "block";
         }
       } catch (err) {
         errorElem.textContent = "Network error. Try again later.";
+        errorElem.style.display = "block";
         console.error(err);
       }
     }
