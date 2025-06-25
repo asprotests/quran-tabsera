@@ -98,7 +98,7 @@
 
     async function fetchResponses() {
       try {
-        const res = await fetch(`/api/responses?teacher=${encodeURIComponent(teacher)}&from=${from}&to=${to}`);
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&teacher=${encodeURIComponent(teacher)}&type=submissions`);
         const data = await res.json();
 
         const tbody = document.getElementById('responses-body');
