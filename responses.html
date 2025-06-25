@@ -106,15 +106,24 @@
 
   <script>
     const token = localStorage.getItem("token");
-if (!token) {
-  window.location.href = "login.html";
-}
 
-const payload = JSON.parse(atob(token.split('.')[1]));
-if (location.pathname.endsWith("responses.html") && payload.role !== "admin") {
-  alert("Access denied. Admins only.");
-  window.location.href = "index.html";
-}
+    if (!token) {
+      window.location.href = "/login.html";
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      if (payload.role !== "admin") {
+        alert("Access denied. Admins only.");
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.error("Invalid token:", err);
+      localStorage.removeItem("token");
+      window.location.href = "/login.html";
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const teacher = decodeURIComponent(urlParams.get('teacher'));
     const from = urlParams.get('from');
@@ -125,10 +134,13 @@ if (location.pathname.endsWith("responses.html") && payload.role !== "admin") {
 
     async function fetchResponses() {
       try {
-        const token = localStorage.getItem("token");
         const res = await fetch(`/api/proxy?from=${from}&to=${to}&teacher=${encodeURIComponent(teacher)}&type=submissions`, {
-           headers: { "Authorization": `Bearer ${token}` }
+         headers: {
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
         });
+
         const data = await res.json();
 
         const tbody = document.getElementById('responses-body');

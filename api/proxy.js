@@ -1,13 +1,22 @@
-// pages/api/proxy.js
-
 export default async function handler(req, res) {
   const { from, to, gender, type, teacher } = req.query;
 
   try {
     let endpoint;
+    let options = {
+      method: req.method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
 
-    if (type === "download") {
-      // Route to download survey/report endpoint
+    if (req.method === "POST") {
+      options.body = JSON.stringify(req.body);
+    }
+
+    if (type === "login") {
+      endpoint = `http://tabsera.com:8585/login`; // Backend login URL
+    } else if (type === "download") {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/survey?from=${from}&to=${to}`;
     } else if (type === "submissions") {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/submissions?from=${from}&to=${to}&teacher=${teacher}`;
@@ -16,7 +25,7 @@ export default async function handler(req, res) {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}`;
     }
 
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, options);
 
     if (!response.ok) {
       const error = await response.text();

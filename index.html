@@ -205,7 +205,10 @@
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download`, {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: {
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
         });
         const data = await res.json();
         if (!data.length) return message.textContent = 'No download records found.';
@@ -245,7 +248,10 @@
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`, {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: {
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
         });
         const data = await res.json();
         const total = data.totalAssignments || 0;
