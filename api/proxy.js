@@ -7,6 +7,9 @@ export default async function handler(req, res) {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
+        ...(req.headers.authorization && {
+          Authorization: req.headers.authorization,
+        }),
       },
     };
 
@@ -15,13 +18,12 @@ export default async function handler(req, res) {
     }
 
     if (type === "login") {
-      endpoint = `http://tabsera.com:8585/api/login`; // Backend login URL
+      endpoint = `http://tabsera.com:8585/api/login`;
     } else if (type === "download") {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/survey?from=${from}&to=${to}`;
     } else if (type === "submissions") {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/submissions?from=${from}&to=${to}&teacher=${teacher}`;
     } else {
-      // Default: assignment report
       endpoint = `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}`;
     }
 
