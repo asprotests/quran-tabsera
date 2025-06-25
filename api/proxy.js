@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
 
     if (type === "login") {
-      endpoint = `http://tabsera.com:8585/login`; // Backend login URL
+      endpoint = `http://tabsera.com:8585/api/login`; // Backend login URL
     } else if (type === "download") {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/survey?from=${from}&to=${to}`;
     } else if (type === "submissions") {
