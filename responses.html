@@ -12,6 +12,9 @@
     }
 
     header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background-color: #2c3e50;
       padding: 1rem 2rem;
       color: white;
@@ -23,71 +26,32 @@
       margin: 0.2rem 0;
     }
 
-    .card {
-      background-color: #ffffff;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      margin-bottom: 1.5rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    th, td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid #eaeaea;
-    }
-
-    th {
-      background-color: #f7f9fb;
-      color: #333;
-      font-weight: 600;
-    }
-
-    tr:hover {
-      background-color: #f1f4f9;
-    }
-
-    audio {
-      width: 160px;
-    }
-
-    .no-data {
-      text-align: center;
-      padding: 2rem;
-      color: #888;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 0.4rem 0.8rem;
-      border-radius: 12px;
-      font-weight: bold;
+    .logout-btn {
+      background-color: #e74c3c;
+      border: none;
       color: white;
-      text-transform: capitalize;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s ease-in-out;
     }
 
-    .status-passed {
-      background-color: #28a745;
+    .logout-btn:hover {
+      background-color: #c0392b;
     }
 
-    .status-failed {
-      background-color: #dc3545;
-    }
+    /* ... rest of your existing CSS for table, cards, etc ... */
   </style>
 </head>
 <body>
   <header>
-    <h1 id="teacher-name"></h1>
-    <h2 id="date-range"></h2>
+    <div>
+      <h1 id="teacher-name"></h1>
+      <h2 id="date-range"></h2>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </header>
 
   <div class="card">
@@ -124,6 +88,11 @@
       window.location.href = "/index.html";
     }
 
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const teacher = decodeURIComponent(urlParams.get('teacher'));
     const from = urlParams.get('from');
@@ -135,10 +104,10 @@
     async function fetchResponses() {
       try {
         const res = await fetch(`/api/proxy?from=${from}&to=${to}&teacher=${encodeURIComponent(teacher)}&type=submissions`, {
-         headers: {
-    "Authorization": `Bearer ${token}`,
-    "Content-Type": "application/json"
-  }
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
         });
 
         const data = await res.json();
