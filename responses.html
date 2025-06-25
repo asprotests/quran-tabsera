@@ -4,29 +4,88 @@
   <meta charset="UTF-8" />
   <title>Teacher Responses</title>
   <style>
-    body { font-family: Arial; padding: 2rem; background-color: #f9f9f9; }
-    h1, h2 { margin-bottom: 0.5rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #fff; }
-    th, td { padding: 0.75rem; border: 1px solid #ddd; }
-    th { background-color: #f1f1f1; }
-    audio { width: 150px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      padding: 2rem;
+      margin: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      padding: 1rem 2rem;
+      color: white;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    h1, h2 {
+      margin: 0.2rem 0;
+    }
+
+    .card {
+      background-color: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    th {
+      background-color: #f7f9fb;
+      color: #333;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: #f1f4f9;
+    }
+
+    audio {
+      width: 160px;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 2rem;
+      color: #888;
+    }
   </style>
 </head>
 <body>
-  <h1 id="teacher-name"></h1>
-  <h2 id="date-range"></h2>
+  <header>
+    <h1 id="teacher-name"></h1>
+    <h2 id="date-range"></h2>
+  </header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Student Name</th>
-        <th>Student Submission</th>
-        <th>Status</th>
-        <th>Teacher Response</th>
-      </tr>
-    </thead>
-    <tbody id="responses-body"></tbody>
-  </table>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Student Submission</th>
+          <th>Status</th>
+          <th>Teacher Response</th>
+        </tr>
+      </thead>
+      <tbody id="responses-body"></tbody>
+    </table>
+  </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -44,7 +103,7 @@
 
         const tbody = document.getElementById('responses-body');
         if (!data.length) {
-          tbody.innerHTML = '<tr><td colspan="4">No responses found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" class="no-data">No responses found.</td></tr>';
           return;
         }
 
