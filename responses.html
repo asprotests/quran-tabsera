@@ -105,6 +105,16 @@
   </div>
 
   <script>
+    const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "login.html";
+}
+
+const payload = JSON.parse(atob(token.split('.')[1]));
+if (location.pathname.endsWith("responses.html") && payload.role !== "admin") {
+  alert("Access denied. Admins only.");
+  window.location.href = "index.html";
+}
     const urlParams = new URLSearchParams(window.location.search);
     const teacher = decodeURIComponent(urlParams.get('teacher'));
     const from = urlParams.get('from');
@@ -115,7 +125,10 @@
 
     async function fetchResponses() {
       try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&teacher=${encodeURIComponent(teacher)}&type=submissions`);
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&teacher=${encodeURIComponent(teacher)}&type=submissions`, {
+           headers: { "Authorization": `Bearer ${token}` }
+        });
         const data = await res.json();
 
         const tbody = document.getElementById('responses-body');

@@ -159,6 +159,17 @@
     </table>
   </div>
   <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (location.pathname.endsWith("responses.html") && payload.role !== "admin") {
+      alert("Access denied. Admins only.");
+      window.location.href = "index.html";
+    }
+
     let currentView = "assignment";
     function showAssignmentReport() {
       currentView = "assignment";
@@ -192,7 +203,10 @@
       if (!from || !to) return message.textContent = 'Please select both From and To dates.';
       message.textContent = 'Loading download report...';
       try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download`);
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
         const data = await res.json();
         if (!data.length) return message.textContent = 'No download records found.';
         data.forEach((item, index) => {
@@ -229,7 +243,10 @@
       if (!from || !to) return message.textContent = 'Please select both From and To dates.';
       message.textContent = 'Loading...';
       try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`);
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
         const data = await res.json();
         const total = data.totalAssignments || 0;
         const graded = data.gradedAssignments || 0;
