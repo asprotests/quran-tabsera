@@ -65,6 +65,23 @@
       padding: 2rem;
       color: #888;
     }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 12px;
+      font-weight: bold;
+      color: white;
+      text-transform: capitalize;
+    }
+
+    .status-passed {
+      background-color: #28a745;
+    }
+
+    .status-failed {
+      background-color: #dc3545;
+    }
   </style>
 </head>
 <body>
@@ -117,10 +134,13 @@
             ? `<audio controls src="${item.teacherResponseAudio}"></audio>`
             : item.teacherResponseText || 'N/A';
 
+          const statusClass = item.status === 'passed' ? 'status-passed' : 'status-failed';
+          const statusBadge = `<span class="status-badge ${statusClass}">${item.status}</span>`;
+
           tr.innerHTML = `
             <td>${item.studentName}</td>
             <td>${submissionAudio}</td>
-            <td>${item.status}</td>
+            <td>${statusBadge}</td>
             <td>${teacherResponse}</td>
           `;
           tbody.appendChild(tr);
