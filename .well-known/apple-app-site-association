@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "DK3ZN84528.com.tabsera.quran",
+        "paths": [ "/share/*" ]
+      }
+    ]
+  }
+}

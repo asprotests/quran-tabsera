@@ -1,0 +1,6 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/.well-known/:match*", "destination": "/.well-known/:match*" }
+  ]
+}

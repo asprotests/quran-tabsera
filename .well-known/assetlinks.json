@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tabsera.quran",
+      "sha256_cert_fingerprints": [
+        "48:61:CE:91:33:E4:09:34:2B:B8:74:3D:AA:49:F2:F7:DE:9D:8F:05:1D:08:6C:E0:52:07:04:5F:A6:EE:4F:9C"
+      ]
+    }
+  }
+]
