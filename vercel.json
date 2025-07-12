@@ -1,6 +1,24 @@
 {
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    }
+  ],
   "rewrites": [
-    { "source": "/.well-known/:match*", "destination": "/.well-known/:match*" }
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "destination": "/.well-known/apple-app-site-association.json"
+    },
+    {
+      "source": "/.well-known/:match*",
+      "destination": "/.well-known/:match*"
+    }
   ]
 }
