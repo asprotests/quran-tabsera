@@ -19,6 +19,10 @@
     {
       "source": "/share/:id",
       "destination": "/share.html"
+    },
+    {
+      "source": "/hasanats",
+      "destination": "/hasanats.html"
     }
   ]
 }
