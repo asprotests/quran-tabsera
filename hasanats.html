@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>How to Count Hasanat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Variables for easy customization */
+    :root {
+      --bg-color: #eef1f5;
+      --card-bg-color: #ffffff;
+      --primary-color: #3b82f6; /* A nice blue for accents */
+      --text-color: #4b5563;
+      --heading-color: #1f2937;
+      --shadow-color: rgba(0, 0, 0, 0.08);
+      --border-radius: 16px;
+      --font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      margin: 0;
+      padding: 1.5rem;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      direction: ltr; /* Default direction */
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      padding: 3rem 2rem;
+      background: var(--card-bg-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 25px var(--shadow-color);
+      transition: box-shadow 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .container:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 600;
+      color: var(--heading-color);
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 2rem;
+      letter-spacing: -0.5px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      padding: 1rem 1.5rem;
+      margin-bottom: 0.75rem;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    li::before {
+      content: '✓';
+      color: var(--primary-color);
+      font-weight: 600;
+      margin-right: 1rem;
+    }
+
+    li:hover {
+      transform: translateY(-3px);
+      background-color: #f1f5f9;
+      border-color: var(--primary-color);
+    }
+
+    /* Media query for smaller screens */
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+      }
+      li {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1 id="card-title">How to Count Hasanat</h1>
+    <ul id="content" aria-labelledby="card-title"></ul>
+  </main>
+
+  <script>
+    const translations = {
+      en: {
+        title: "How Hasanats are counted",
+        dir: "ltr",
+        points: [
+          "A page is counted as read if it is kept open for 20 seconds or more.",
+          "Ayahs and letters are counted from the pages that have been read.",
+          "A Juz' is considered completed if any 20 pages have been read, regardless of the sequence or whether some pages were re-read.",
+          "A Khatmah is considered completed if all 604 distinct pages of the Qur'an are read.",
+          "Hasanat (rewards) are calculated by multiplying the number of letters read by 10."
+        ]
+      },
+      ar: {
+        title: "كيفية عد الحسنات",
+        dir: "rtl",
+        points: [
+          "تُحتسب الصفحة كمقروءة إذا بقيت مفتوحة لمدة 20 ثانية أو أكثر.",
+          "يتم عد الآيات والحروف من الصفحات التي تمت قراءتها.",
+          "يُعتبر الجزء مكتملًا عند قراءة أي 20 صفحة، بغض النظر عن الترتيب أو إعادة قراءة نفس الصفحات.",
+          "تُعتبر الختمة مكتملة إذا تم قراءة جميع صفحات القرآن الـ 604 المميزة.",
+          "تحتسب الحسنات بضرب عدد الحروف المقروءة في 10."
+        ]
+      },
+      fr: {
+        title: "Comment compter les Hasanat",
+        dir: "ltr",
+        points: [
+          "Une page est comptée comme lue si elle reste ouverte pendant 20 secondes ou plus.",
+          "Les versets (ayahs) et les lettres sont comptés à partir des pages lues.",
+          "Un Juz' est considéré comme achevé si 20 pages ont été lues, quel que soit l'ordre ou la relecture des mêmes pages.",
+          "Une Khatmah est considérée comme achevée si les 604 pages distinctes du Coran sont lues.",
+          "Les Hasanat (récompenses) sont calculées en multipliant le nombre de lettres lues par 10."
+        ]
+      },
+      so: {
+        title: "Sida loo xisaabinayo Xasanaadka",
+        dir: "ltr",
+        points: [
+          "Bogga waxaa loo tirinayaa mid la akhriyey haddii uu furnaado 20 ilbiriqsi ama ka badan.",
+          "Aayadaha iyo xuruufaha waxaa laga soo tirinayaa bogaga la akhriyey.",
+          "Juz-ka waxaa loo tirinayaa mid dhameystiran haddii 20 bog la akhriyo, iyadoon la eegin sida ay isugu xigaan ama in bogag isku mid ah dib loo akhriyey.",
+          "Khatmah waxaa loo tirinayaa mid dhameystiran haddii la akhriyo dhammaan 604-ta bog ee Qur'aanka.",
+          "Xasanaadka waxaa lagu xisaabiyaa tirada xuruufaha la akhriyey oo lagu dhuftay 10."
+        ]
+      },
+      ur: {
+        title: "حسنات کی گنتی کیسے کی جائے",
+        dir: "rtl",
+        points: [
+          "ایک صفحہ اس وقت پڑھا ہوا شمار ہوگا جب اسے 20 سیکنڈ یا اس سے زیادہ دیر تک کھلا رکھا جائے۔",
+          "آیات اور حروف پڑھے گئے صفحات میں سے شمار کیے جاتے ہیں۔",
+          "ایک جز کو مکمل سمجھا جائے گا اگر کوئی بھی 20 صفحات پڑھے جائیں، چاہے ترتیب کچھ بھی ہو یا انہی صفحات کو دوبارہ پڑھا گیا ہو۔",
+          "ختم کو مکمل سمجھا جائے گا اگر قرآن کے تمام 604 صفحات پڑھے جائیں۔",
+          "حسنات کی گنتی پڑھے گئے حروف کی تعداد کو 10 سے ضرب دے کر کی جاتی ہے۔"
+        ]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get("l")?.toLowerCase() || "en";
+    const content = translations[lang] || translations["en"];
+
+    document.documentElement.lang = lang;
+    document.body.style.direction = content.dir;
+    document.getElementById("card-title").innerText = content.title;
+    document.title = content.title; // Also update the browser tab title
+
+    const ul = document.getElementById("content");
+    ul.innerHTML = ""; // Clear existing content
+    content.points.forEach(point => {
+      const li = document.createElement("li");
+      li.textContent = point;
+      ul.appendChild(li);
+    });
+  </script>
+</body>
+</html>
