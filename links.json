@@ -1,7 +1,7 @@
 {
   "responseCode": 200,
   "data": {
-    "ociRead": "https://objectstorage.uk-london-1.oraclecloud.com/p/38xaKMODb8XyJWzcwagDnMdcFRHiZcXQtJZBCrvzfRRQgTTCxUQnJjnqM3ueQvXI/n/lrl0eb8o6say/b/tabsera-quran-bucket/o/"
+    "ociRead": "https://lrl0eb8o6say.objectstorage.uk-london-1.oci.customer-oci.com/p/38xaKMODb8XyJWzcwagDnMdcFRHiZcXQtJZBCrvzfRRQgTTCxUQnJjnqM3ueQvXI/n/lrl0eb8o6say/b/tabsera-quran-bucket/o/"
   },
   "message": "Links fetched successfully"
 }
