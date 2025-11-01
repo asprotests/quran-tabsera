@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { from, to, gender, type, teacher } = req.query;
+  const { from, to, gender, type, teacher, onlyActivity } = req.query;
 
   try {
     let endpoint;
