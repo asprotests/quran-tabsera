@@ -144,6 +144,7 @@
   <div class="container">
     <div class="toggle-buttons">
       <button id="assignment-btn" onclick="showAssignmentReport()">Assignment Report</button>
+      <button id="daily-btn" onclick="showDailyReport()">Daily Teacher Report</button> <!-- ✅ NEW BUTTON -->
       <button id="survey-btn" onclick="showDownloadReport()">Download Report</button>
     </div>
 
@@ -205,28 +206,44 @@
 
     let currentView = "assignment";
 
+    function resetButtons() {
+      document.querySelectorAll('.toggle-buttons button').forEach(btn => btn.style.backgroundColor = '#ccc');
+    }
+
     function showAssignmentReport() {
       currentView = "assignment";
+      resetButtons();
+      document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
       document.getElementById('assignment-table').style.display = '';
       document.getElementById('survey-table').style.display = 'none';
-      document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
-      document.getElementById('survey-btn').style.backgroundColor = '#ccc';
+      document.getElementById('gender-label').style.display = '';
+      document.getElementById('stats').style.display = '';
+    }
+
+    // ✅ NEW FUNCTION
+    function showDailyReport() {
+      currentView = "daily";
+      resetButtons();
+      document.getElementById('daily-btn').style.backgroundColor = '#3498db';
+      document.getElementById('assignment-table').style.display = '';
+      document.getElementById('survey-table').style.display = 'none';
       document.getElementById('gender-label').style.display = '';
       document.getElementById('stats').style.display = '';
     }
 
     function showDownloadReport() {
       currentView = "download";
+      resetButtons();
+      document.getElementById('survey-btn').style.backgroundColor = '#3498db';
       document.getElementById('assignment-table').style.display = 'none';
       document.getElementById('survey-table').style.display = '';
-      document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
-      document.getElementById('survey-btn').style.backgroundColor = '#3498db';
       document.getElementById('gender-label').style.display = 'none';
       document.getElementById('stats').style.display = 'none';
     }
 
     function handleSearch() {
-      if (currentView === "assignment") fetchReport();
+      if (currentView === "assignment") fetchReport(false);
+      else if (currentView === "daily") fetchReport(true); // ✅ dailyActivity=true
       else fetchDownloadReport();
     }
 
@@ -268,7 +285,8 @@
       window.location.href = `/responses.html?teacher=${encodeURIComponent(teacher)}&from=${from}&to=${to}`;
     }
 
-    async function fetchReport() {
+    // ✅ UPDATED fetchReport (now accepts dailyActivity flag)
+    async function fetchReport(dailyActivity = false) {
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
       const gender = document.getElementById('gender').value;
@@ -281,7 +299,7 @@
       if (!from || !to) return message.textContent = 'Please select both From and To dates.';
       message.textContent = 'Loading...';
       try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`, {
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}&dailyActivity=${dailyActivity}`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await res.json();
