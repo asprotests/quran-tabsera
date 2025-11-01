@@ -145,6 +145,7 @@
     <div class="toggle-buttons">
       <button id="assignment-btn" onclick="showAssignmentReport()">Assignment Report</button>
       <button id="survey-btn" onclick="showDownloadReport()">Download Report</button>
+      <button id="activity-btn" onclick="showTeacherActivity()">Teacher Activity</button>
     </div>
 
     <div class="controls">
@@ -186,6 +187,17 @@
       </thead>
       <tbody id="survey-body"></tbody>
     </table>
+
+    <table id="activity-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Teacher</th>
+          <th>Graded Assignments</th>
+        </tr>
+      </thead>
+      <tbody id="activity-body"></tbody>
+    </table>
   </div>
 
   <script>
@@ -207,27 +219,39 @@
 
     function showAssignmentReport() {
       currentView = "assignment";
-      document.getElementById('assignment-table').style.display = '';
-      document.getElementById('survey-table').style.display = 'none';
-      document.getElementById('assignment-btn').style.backgroundColor = '#3498db';
-      document.getElementById('survey-btn').style.backgroundColor = '#ccc';
-      document.getElementById('gender-label').style.display = '';
-      document.getElementById('stats').style.display = '';
+      toggleView("assignment-table", "assignment-btn", true);
     }
 
     function showDownloadReport() {
       currentView = "download";
-      document.getElementById('assignment-table').style.display = 'none';
-      document.getElementById('survey-table').style.display = '';
-      document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
-      document.getElementById('survey-btn').style.backgroundColor = '#3498db';
-      document.getElementById('gender-label').style.display = 'none';
+      toggleView("survey-table", "survey-btn", false);
+    }
+
+    function showTeacherActivity() {
+      currentView = "activity";
+      toggleView("activity-table", "activity-btn", true);
       document.getElementById('stats').style.display = 'none';
     }
 
+    function toggleView(tableId, btnId, showGender) {
+      document.getElementById('assignment-table').style.display = 'none';
+      document.getElementById('survey-table').style.display = 'none';
+      document.getElementById('activity-table').style.display = 'none';
+      document.getElementById(tableId).style.display = '';
+
+      document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
+      document.getElementById('survey-btn').style.backgroundColor = '#ccc';
+      document.getElementById('activity-btn').style.backgroundColor = '#ccc';
+      document.getElementById(btnId).style.backgroundColor = '#3498db';
+
+      document.getElementById('gender-label').style.display = showGender ? '' : 'none';
+      document.getElementById('stats').style.display = showGender ? '' : 'none';
+    }
+
     function handleSearch() {
-      if (currentView === "assignment") fetchReport();
-      else fetchDownloadReport();
+      if (currentView === "assignment") fetchReport(false);
+      else if (currentView === "download") fetchDownloadReport();
+      else if (currentView === "activity") fetchReport(true);
     }
 
     async function fetchDownloadReport() {
@@ -268,23 +292,38 @@
       window.location.href = `/responses.html?teacher=${encodeURIComponent(teacher)}&from=${from}&to=${to}`;
     }
 
-    async function fetchReport() {
+    async function fetchReport(onlyActivity = false) {
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
       const gender = document.getElementById('gender').value;
       const message = document.getElementById('message');
-      const body = document.getElementById('report-body');
+      const body = onlyActivity ? document.getElementById('activity-body') : document.getElementById('report-body');
       const stats = document.getElementById('stats');
       message.textContent = '';
       body.innerHTML = '';
-      stats.innerHTML = '';
       if (!from || !to) return message.textContent = 'Please select both From and To dates.';
       message.textContent = 'Loading...';
       try {
-        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}`, {
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&gender=${gender}&onlyactivity=${onlyActivity}`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await res.json();
+
+        if (onlyActivity) {
+          if (!data.teachers || !data.teachers.length) return message.textContent = 'No activity records found.';
+          data.teachers.forEach((row, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${row.id}</td>
+              <td>${row.teacher}</td>
+              <td>${row.assignmentsGraded}</td>
+            `;
+            body.appendChild(tr);
+          });
+          message.textContent = '';
+          return;
+        }
+
         const total = data.totalAssignments || 0;
         const graded = data.gradedAssignments || 0;
         const ungraded = data.ungradedAssignments || 0;
@@ -304,6 +343,7 @@
             <h2>${ungraded}</h2><small>${ungradedPercent}%</small><p>Ungraded ${genderLabel}Assignments</p>
           </div>
         `;
+
         if (!data.teachers || !data.teachers.length) return message.textContent = 'No teachers found for this range.';
         data.teachers.forEach((row, i) => {
           const percent = total ? ((row.assignmentsGraded / total) * 100).toFixed(1) : '0.0';
