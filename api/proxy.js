@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     } else if (type === "submissions") {
       endpoint = `http://tabsera.com:8585/quran-teacher-report/submissions?from=${from}&to=${to}&teacher=${teacher}`;
     } else {
-      endpoint = `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}&onlyactivity=${onlyActivity}`;
+      endpoint = `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}&onlyActivity=${onlyActivity}`;
     }
 
     const response = await fetch(endpoint, options);
