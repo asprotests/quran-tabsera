@@ -145,6 +145,7 @@
     <div class="toggle-buttons">
       <button id="assignment-btn" onclick="showAssignmentReport()">Assignment Report</button>
       <button id="survey-btn" onclick="showDownloadReport()">Download Report</button>
+      <button id="degmooyinka-btn" onclick="showDegmooyinka()">Degmooyinka</button>
       <button id="activity-btn" onclick="showTeacherActivity()">Teacher Activity</button>
     </div>
 
@@ -188,6 +189,19 @@
       <tbody id="survey-body"></tbody>
     </table>
 
+    <table id="degmooyinka-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Degmo</th>
+          <th>Android Downloads</th>
+          <th>iOS Downloads</th>
+          <th>Total Downloads</th>
+        </tr>
+      </thead>
+      <tbody id="degmooyinka-body"></tbody>
+    </table>
+
     <table id="activity-table" style="display:none;">
       <thead>
         <tr>
@@ -227,6 +241,11 @@
       toggleView("survey-table", "survey-btn", false);
     }
 
+    function showDegmooyinka() {
+      currentView = "degmooyinka";
+      toggleView("degmooyinka-table", "degmooyinka-btn", false);
+    }
+
     function showTeacherActivity() {
       currentView = "activity";
       toggleView("activity-table", "activity-btn", true);
@@ -236,11 +255,13 @@
     function toggleView(tableId, btnId, showGender) {
       document.getElementById('assignment-table').style.display = 'none';
       document.getElementById('survey-table').style.display = 'none';
+      document.getElementById('degmooyinka-table').style.display = 'none';
       document.getElementById('activity-table').style.display = 'none';
       document.getElementById(tableId).style.display = '';
 
       document.getElementById('assignment-btn').style.backgroundColor = '#ccc';
       document.getElementById('survey-btn').style.backgroundColor = '#ccc';
+      document.getElementById('degmooyinka-btn').style.backgroundColor = '#ccc';
       document.getElementById('activity-btn').style.backgroundColor = '#ccc';
       document.getElementById(btnId).style.backgroundColor = '#3498db';
 
@@ -251,6 +272,7 @@
     function handleSearch() {
       if (currentView === "assignment") fetchReport(false);
       else if (currentView === "download") fetchDownloadReport();
+      else if (currentView === "degmooyinka") fetchDegmooyinkaReport();
       else if (currentView === "activity") fetchReport(true);
     }
 
@@ -285,6 +307,40 @@
         message.textContent = '';
       } catch (err) {
         message.textContent = 'Network error loading download report.';
+      }
+    }
+
+    async function fetchDegmooyinkaReport() {
+      const message = document.getElementById('message');
+      const body = document.getElementById('degmooyinka-body');
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      message.textContent = '';
+      body.innerHTML = '';
+      if (!from || !to) return message.textContent = 'Please select both From and To dates.';
+      message.textContent = 'Loading Degmooyinka report...';
+      try {
+        const res = await fetch(`/api/proxy?from=${from}&to=${to}&type=download&category=degmooyinka`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!data.length) return message.textContent = 'No download records found.';
+        data.forEach((item, index) => {
+          const isTotal = item.agent === "Total";
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${isTotal ? '' : index + 1}</td>
+            <td><strong>${item.agent}</strong></td>
+            <td><strong>${item.android}</strong></td>
+            <td><strong>${item.ios}</strong></td>
+            <td><strong>${item.total}</strong></td>
+          `;
+          if (isTotal) tr.style.backgroundColor = "#eef2f7";
+          body.appendChild(tr);
+        });
+        message.textContent = '';
+      } catch (err) {
+        message.textContent = 'Network error loading Degmooyinka report.';
       }
     }
 
