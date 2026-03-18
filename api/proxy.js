@@ -18,13 +18,13 @@ export default async function handler(req, res) {
     }
 
     if (type === "login") {
-      endpoint = `http://tabsera.com:8585/api/login`;
+      endpoint = `http://live.tabsera.com:8585/api/login`;
     } else if (type === "download") {
-      endpoint = `http://tabsera.com:8585/quran-teacher-report/survey?from=${from}&to=${to}${category ? `&category=${category}` : ''}`;
+      endpoint = `http://live.tabsera.com:8585/quran-teacher-report/survey?from=${from}&to=${to}${category ? `&category=${category}` : ''}`;
     } else if (type === "submissions") {
-      endpoint = `http://tabsera.com:8585/quran-teacher-report/submissions?from=${from}&to=${to}&teacher=${teacher}`;
+      endpoint = `http://live.tabsera.com:8585/quran-teacher-report/submissions?from=${from}&to=${to}&teacher=${teacher}`;
     } else {
-      endpoint = `http://tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}&onlyActivity=${onlyActivity}`;
+      endpoint = `http://live.tabsera.com:8585/quran-teacher-report/report?from=${from}&to=${to}&gender=${gender}&onlyActivity=${onlyActivity}`;
     }
 
     const response = await fetch(endpoint, options);
